@@ -1,0 +1,43 @@
+Stored
+
+USE [AdventureWorks2014]
+GO
+CREATE PROCEDURE AddProc
+AS
+SELECT * FROM [AdventureWorks2014].[Person].[Address];
+GO
+
+Leftr and right
+
+SELECT [Person].[BusinessEntityID]
+	,[Person].[FirstName]
+	,[Person].[LastName]
+	,[EmailAddress].[EmailAddress]
+	,[Password].[PasswordHash]
+	,[Password].[PasswordSalt]
+FROM [AdventureWorks2014].[Person].[Password]
+LEFT JOIN [AdventureWorks2014].[Person].[EmailAddress]
+ON [Password].[BusinessEntityID] = [EmailAddress].[BusinessEntityID]
+RIGHT JOIN [AdventureWorks2014].[Person].[Person]
+ON [Password].[BusinessEntityID] = [Person].[BusinessEntityID];
+
+PIVOT
+
+SELECT VendorID, [250] AS EMP1, [251] AS EMP2, [256] AS EMP3, [257] AS EMP4, [260] AS EMP5
+FROM(
+SELECT [PurchaseOrderHeader].[PurchaseOrderID] 
+	,[PurchaseOrderHeader].[EmployeeID]
+	, [PurchaseOrderHeader].[VendorID]
+FROM [AdventureWorks2014].[Purchasing].[PurchaseOrderHeader]
+WHERE EmployeeID=250
+OR EmployeeID=251
+OR EmployeeID=256
+OR EmployeeID=257
+OR EmployeeID=260
+) as s
+PIVOT
+(
+COUNT([PurchaseOrderID])
+FOR [EmployeeID] IN ([250],[251],[256],[257],[260])
+)AS pvt
+ORDER BY pvt.VendorID;
